@@ -8,7 +8,7 @@ const Tenants = () => {
   const [tenants, setTenants] = useState([]);
   const [selectedTenant, setSelectedTenant] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState('January');
-  const [selectedYear, setSelectedYear] = useState('2024');
+  const [selectedYear, setSelectedYear] = useState('2025');
   const [amount, setAmount] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();

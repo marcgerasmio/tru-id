@@ -6,14 +6,50 @@ const Employees = () => {
   const [employees, setEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchEmployee = async () => {
-    const { data } = await supabase
-    .from('Employee')
-    .select('*')
-    setEmployees(data);
+    try {
+      const { data, error } = await supabase
+        .from('Employee')
+        .select('*');
+      
+      if (error) {
+        console.error("Error fetching employees:", error);
+        return;
+      }
+      
+      setEmployees(data || []);
+    } catch (err) {
+      console.error("Exception when fetching employees:", err);
+    }
   };
 
+  const deleteEmployee = async () => {
+    if (!selectedEmployee || !selectedEmployee.id) return;
+    
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase
+        .from('Employee')
+        .delete()
+        .eq('id', selectedEmployee.id);
+      
+      if (error) {
+        console.error("Error deleting employee:", error);
+        alert("Failed to delete employee. Please try again.");
+      } else {
+        // Remove the deleted employee from the local state
+        setEmployees(employees.filter(emp => emp.id !== selectedEmployee.id));
+        closeModal();
+      }
+    } catch (err) {
+      console.error("Exception when deleting employee:", err);
+      alert("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const openModal = (employee) => {
     setSelectedEmployee(employee);
@@ -30,16 +66,14 @@ const Employees = () => {
     }
   };
 
-
   useEffect(() => {
     fetchEmployee();
-   }, []);
+  }, []);
 
-   const filteredEmployees = employees.filter(employee =>
-    employee.employee_name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredEmployees = employees.filter(employee =>
+    employee.employee_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
- 
   return (
     <>
       <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100 font-mono">
@@ -92,29 +126,29 @@ const Employees = () => {
                       </tr>
                     </thead>
                     <tbody>
-                    {filteredEmployees.map((employee) => (
-                    <tr key={employee.id}>
-                      <td>{employee.id_number}</td>
-                      <td>{employee.employee_name}</td>
-                      <td>{employee.department_assigned} Section</td>
-                      {employee.assign ? (
-                        <td>
-                          <button className="btn btn-error btn-sm text-white">
-                           Delete
-                          </button>
-                        </td>
-                      ) : (
-                        <td>
-                          <button
-                            className="btn btn-primary btn-sm text-white"
-                            onClick={() => openModal(employee)}
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      )}
-                    </tr>
-                  ))}
+                      {filteredEmployees.map((employee) => (
+                        <tr key={employee.id}>
+                          <td>{employee.id_number}</td>
+                          <td>{employee.employee_name}</td>
+                          <td>{employee.department_assigned} Section</td>
+                          {employee.assign ? (
+                            <td>
+                              <button className="btn btn-error btn-sm text-white">
+                                Delete
+                              </button>
+                            </td>
+                          ) : (
+                            <td>
+                              <button
+                                className="btn btn-primary btn-sm text-white"
+                                onClick={() => openModal(employee)}
+                              >
+                                Delete
+                              </button>
+                            </td>
+                          )}
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -138,9 +172,19 @@ const Employees = () => {
           <p className="py-4">
             Are you sure you want to delete employee {selectedEmployee.employee_name}?
           </p>
-          <div className="flex justify-end content-end">
-            <button className="btn btn-error text-white" onClick={closeModal}>
-              Delete
+          <div className="flex justify-end gap-2">
+            <button 
+              className="btn btn-outline" 
+              onClick={closeModal}
+            >
+              Cancel
+            </button>
+            <button 
+              className="btn btn-error text-white" 
+              onClick={deleteEmployee}
+              disabled={isDeleting}
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
             </button>
           </div>
         </div>
