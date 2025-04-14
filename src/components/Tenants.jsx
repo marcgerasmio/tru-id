@@ -79,6 +79,26 @@ const Tenants = () => {
     tenants.tenant_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const deleteTenant = async () => {
+    if (!selectedTenant || !selectedTenant.id) return;
+  
+    try {
+      const { error } = await supabase
+        .from('Tenant')
+        .delete()
+        .eq('id', selectedTenant.id);
+  
+      if (error) throw error;
+  
+      // Refresh tenant list after deletion
+      fetchTenant();
+      closeModal();
+      alert("Tenant successfully deleted.");
+    } catch (err) {
+      alert(`Failed to delete tenant: ${err.message}`);
+    }
+  };
+  
 
   useEffect(() => {
     fetchTenant();
@@ -187,12 +207,13 @@ const Tenants = () => {
           </form>
           <h3 className="font-bold text-lg">Confirm Action</h3>
           <p className="py-4">
-            Are you sure you want to delete employee John Doe?
+            Are you sure you want to delete tenant{" "}
+            <span className="font-bold">{selectedTenant?.tenant_name}</span>?
           </p>
           <div className="flex justify-end content-end">
-            <button className="btn btn-error text-white" onClick={closeModal}>
-              Delete
-            </button>
+          <button className="btn btn-error text-white" onClick={deleteTenant}>
+  Delete
+</button>
           </div>
         </div>
       </dialog>
