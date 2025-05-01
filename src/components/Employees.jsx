@@ -1,6 +1,7 @@
 import Sidebar from "./Sidebar.jsx";
 import { useState, useEffect } from "react";
 import supabase from "./supabaseClient.jsx";
+import * as XLSX from 'xlsx';
 
 const Employees = () => {
   const [employees, setEmployees] = useState([]);
@@ -74,6 +75,36 @@ const Employees = () => {
     employee.employee_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const exportToExcel = () => {
+    // Prepare the data for export
+    const exportData = employees.map(employee => ({
+      'Employee ID': employee.id_number,
+      'Employee Name': employee.employee_name,
+      'Current Assignment': `${employee.department_assigned} Section`,
+      'Status': employee.status
+    }));
+
+    // Create a new workbook
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(exportData);
+
+    // Set column widths
+    const wscols = [
+      {wch: 15}, // Employee ID
+      {wch: 25}, // Employee Name
+      {wch: 25}, // Current Assignment
+      {wch: 15}  // Status
+    ];
+    ws['!cols'] = wscols;
+
+    // Add the worksheet to the workbook
+    XLSX.utils.book_append_sheet(wb, ws, "Employees");
+
+    // Generate the Excel file
+    const fileName = `Employees_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+  };
+
   return (
     <>
       <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100 font-mono">
@@ -82,7 +113,7 @@ const Employees = () => {
           <div className="mt-6">
             <div className="card bg-base-100 border shadow-md mt-4">
               <div className="card-body">
-                <div className="flex flex-col md:flex-row md:justify-between gap-4 mb-4">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
                   <div>
                     <h2 className="card-title text-md md:text-2xl">
                       List of All Employees
@@ -91,28 +122,35 @@ const Employees = () => {
                       Employee List and their Details.
                     </p>
                   </div>
-
-                  <label className="input input-bordered flex items-center gap-2 w-full md:w-1/2 lg:w-1/3">
-                    <input
-                      type="text"
-                      placeholder="Search Employee Name..."
-                      className="w-full grow"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 16 16"
-                      fill="currentColor"
-                      className="h-4 w-4 opacity-70"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                        clipRule="evenodd"
+                  <div className="flex gap-2 items-center">
+                    <label className="input input-bordered flex items-center gap-2 w-full md:w-64">
+                      <input
+                        type="text"
+                        placeholder="Search Employee Name..."
+                        className="w-full grow"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                       />
-                    </svg>
-                  </label>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 16 16"
+                        fill="currentColor"
+                        className="h-4 w-4 opacity-70"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </label>
+                    <button
+                      className="btn btn-success btn-sm text-white"
+                      onClick={exportToExcel}
+                    >
+                      Export to Excel
+                    </button>
+                  </div>
                 </div>
 
                 <div className="overflow-x-auto">

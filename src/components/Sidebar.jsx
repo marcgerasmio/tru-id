@@ -90,16 +90,15 @@ const Sidebar = () => {
                 Sanctions
               </NavLink>
             </li>
+
+            <li className="p-2 hover:bg-red-600 rounded">
+              <NavLink to="/account-management" className="block">
+                Account Management
+              </NavLink>
+            </li>
           </ul>
 
-          <NavLink to="/profile" className="block">
-            <button className="hidden lg:flex items-center hover:bg-red-600 p-2 rounded mt-10">
-              <span className="mr-2">
-                <FaUser size={15} />
-              </span>
-              Admin
-            </button>
-          </NavLink>
+   
           <button
             onClick={() => openModal()}
             className="hidden lg:flex items-center hover:bg-red-600 rounded p-2"

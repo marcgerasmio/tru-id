@@ -7,6 +7,7 @@ import PaymentHistory from "./components/History.jsx";
 import Sanction from "./components/Sanction.jsx";
 import Profile from "./components/Profile.jsx";
 import Unpaid from "./components/Unpaid.jsx";
+import AccountManagement from "./components/AccountManagement.jsx";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <Route path="/sanction" element={<Sanction />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/unpaid" element={<Unpaid />} />
+        <Route path="/account-management" element={<AccountManagement />} />
       </Routes>
     </>
   );

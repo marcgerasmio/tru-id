@@ -93,8 +93,11 @@ const Unpaid = () => {
                       <tr>
                         <th>Business Number</th>
                         <th>Store Name</th>
-                        <th>Section</th>
-                        <th>Payment Amount</th>
+                        <th>Section</th>  
+                        <th>Water Bill</th>
+                        <th>Electric Bill</th>
+                        <th>Stall Rent</th>
+                        <th>Total Bill</th>
                         <th>For Month of</th>
                       </tr>
                     </thead>
@@ -103,8 +106,11 @@ const Unpaid = () => {
                     <tr key={payment.id}>
                       <td>{payment.business_number}</td>
                       <td>{payment.store_name}</td>
-                      <td>{payment.department}</td>
-                      <td>{payment.amount}</td>
+                      <td>{payment.department}</td> 
+                      <td>{payment.water_bill}</td>
+                      <td>{payment.electric_bill}</td>
+                      <td>{payment.rent}</td>
+                      <td>{payment.total}</td>
                       <td>{payment.date}</td>
                     </tr>
                   ))}
