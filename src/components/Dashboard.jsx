@@ -3,19 +3,19 @@ import { FaSignOutAlt, FaUsers } from "react-icons/fa";
 import { MdPayment } from "react-icons/md";
 import { useState, useEffect } from "react";
 import supabase from "./supabaseClient.jsx";
-
+import { PiWarningBold } from "react-icons/pi";
 
 const Dashboard = () => {
   const [isAssign, setAssign] = useState(false);
   const [assign, reAssign] = useState(false);
   const [employees, setEmployees] = useState([]);
-  const [totalEmployees, setTotalEmployees] = useState('');
-  const [totalTenants, setTotalTenants] = useState('');
-  const [pendingPayments, setPendingPayments] = useState('');
-  const [totalSanctions, setTotalSanctions] = useState('');
+  const [totalEmployees, setTotalEmployees] = useState("");
+  const [totalTenants, setTotalTenants] = useState("");
+  const [pendingPayments, setPendingPayments] = useState("");
+  const [totalSanctions, setTotalSanctions] = useState("");
   const [selectedEmployee, setSelectedEmployee] = useState([]);
-  const [selectedSection, setSelectedSection] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSection, setSelectedSection] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const openModal = (employee) => {
     setSelectedEmployee(employee);
@@ -24,47 +24,42 @@ const Dashboard = () => {
       modal.showModal();
     }
   };
-  
+
   const handleClick = () => {
     setAssign(true);
     reAssign(true);
   };
 
   const totalEmployee = async () => {
-    const { data } = await supabase
-    .from('Employee')
-    .select('*')
+    const { data } = await supabase.from("Employee").select("*");
 
     setTotalEmployees(data.length);
     setEmployees(data);
   };
 
   const totalTenant = async () => {
-    const { data } = await supabase
-    .from('Tenant')
-    .select('*')
+    const { data } = await supabase.from("Tenant").select("*");
 
-    setTotalTenants(data.length)
+    setTotalTenants(data.length);
   };
 
   const pendingPayment = async () => {
     const { data } = await supabase
-    .from('Rent')
-    .select('*')
-    .eq('status', 'Pending')
+      .from("Rent")
+      .select("*")
+      .eq("status", "Pending");
 
-    setPendingPayments(data.length)
+    setPendingPayments(data.length);
   };
 
   const pendingSanction = async () => {
     const { data } = await supabase
-    .from('Sanction')
-    .select('*')
-    .eq('status', 'Unresolved')
-    setTotalSanctions(data.length)
+      .from("Sanction")
+      .select("*")
+      .eq("status", "Unresolved");
+    setTotalSanctions(data.length);
   };
 
-  
   const updateAssignment = async () => {
     try {
       const { data } = await supabase
@@ -81,68 +76,82 @@ const Dashboard = () => {
     }
   };
 
-  const filteredEmployees = employees.filter(employee =>
+  const filteredEmployees = employees.filter((employee) =>
     employee.employee_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-
   useEffect(() => {
-   totalEmployee();
-   totalTenant();
-   pendingPayment();
-   pendingSanction();
+    totalEmployee();
+    totalTenant();
+    pendingPayment();
+    pendingSanction();
   }, []);
 
   return (
     <>
       <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100 font-mono">
         <Sidebar className="hidden lg:block" />
-        <main className="flex-1 p-4 md:p-6 lg:p-8 ml-0 lg:ml-64 transition-all duration-300">
-          <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <div className="card bg-base-100 shadow-md">
-              <div className="card-body">
-                <h2 className="card-title text-sm flex items-center gap-2">
-                  <FaUsers size={20} className="text-gray-400" />
-                  Total Employees
-                </h2>
-                <p className="text-2xl font-bold">{totalEmployees}</p>
-             
+        <main className="flex-1 p-6 md:p-6 lg:p-6 ml-0 lg:ml-64 transition-all duration-300 text-gray-800">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="bg-white rounded-lg shadow p-5 border-l-4 border-blue-500">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm text-gray-500 font-medium">
+                    Total Employees
+                  </h4>
+                  <p className="text-2xl font-semibold text-gray-900 mt-1">
+                    {totalEmployees}
+                  </p>
+                </div>
+                <FaUsers size={28} className="text-blue-500" />
               </div>
             </div>
-            <div className="card bg-base-100 shadow-md">
-              <div className="card-body">
-                <h2 className="card-title text-sm flex items-center gap-2">
-                  <FaUsers size={20} className="text-gray-400" />
-                  Total Tenants
-                </h2>
-                <p className="text-2xl font-bold">{totalTenants}</p>
-         
+
+            <div className="bg-white rounded-lg shadow p-5 border-l-4 border-green-500">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm text-gray-500 font-medium">
+                    Total Tenants
+                  </h4>
+                  <p className="text-2xl font-semibold text-gray-900 mt-1">
+                    {totalTenants}
+                  </p>
+                </div>
+                <FaUsers size={28} className="text-green-500" />
               </div>
             </div>
-            <div className="card bg-base-100 shadow-md">
-              <div className="card-body">
-                <h2 className="card-title text-sm flex items-center gap-2">
-                  <MdPayment size={20} className="text-gray-400" />
-                  Pending Payments
-                </h2>
-                <p className="text-2xl font-bold">{pendingPayments}</p>
-            
+
+            <div className="bg-white rounded-lg shadow p-5 border-l-4 border-yellow-500">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm text-gray-500 font-medium">
+                    Pending Payments
+                  </h4>
+                  <p className="text-2xl font-semibold text-gray-900 mt-1">
+                    {pendingPayments}
+                  </p>
+                </div>
+                <MdPayment size={28} className="text-yellow-500" />
               </div>
             </div>
-            <div className="card bg-base-100 shadow-md">
-              <div className="card-body">
-                <h2 className="card-title text-sm flex items-center gap-2">
-                  <FaSignOutAlt size={20} className="text-gray-400" />
-                  Active Sanctions
-                </h2>
-                <p className="text-2xl font-bold">{totalSanctions}</p>
-         
+
+            <div className="bg-white rounded-lg shadow p-5 border-l-4 border-red-500">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm text-gray-500 font-medium">
+                    Active Sanctions
+                  </h4>
+                  <p className="text-2xl font-semibold text-gray-900 mt-1">
+                    {totalSanctions}
+                  </p>
+                </div>
+                <PiWarningBold size={28} className="text-red-500" />
               </div>
             </div>
           </div>
 
           <div className="mt-6">
-            <div className="card bg-base-100 border shadow-md mt-4">
+            <div className="card bg-white border shadow-md mt-4">
               <div className="card-body">
                 <div className="flex flex-col sm:flex-row sm:justify-between mb-4">
                   <div>
@@ -174,40 +183,44 @@ const Dashboard = () => {
                   </label>
                 </div>
                 <div className="overflow-x-auto">
-                <table className="table w-full">
-                <thead>
-                  <tr>
-                    <th>Employee Name</th>
-                    <th>Current Assignment</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredEmployees.map((employee) => (
-                    <tr key={employee.id}>
-                      <td>{employee.employee_name}</td>
-                      <td>{employee.department_assigned} Section</td>
-                      {employee.assign ? (
-                        <td>
-                          <button className="btn btn-error btn-sm text-white">
-                            Re-Assign
-                          </button>
-                        </td>
-                      ) : (
-                        <td>
-                          <button
-                            className="btn btn-primary btn-sm text-white"
-                            onClick={() => openModal(employee)}
-                          >
-                            Assign
-                          </button>
-                        </td>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
+                  <table className="min-w-full table-auto border border-gray-200 rounded-lg overflow-hidden text-sm">
+                    <thead className="bg-gray-100 text-gray-600 uppercase text-xs leading-normal">
+                      <tr>
+                        <th className="py-3 px-6 text-left">Employee Name</th>
+                        <th className="py-3 px-6 text-left">
+                          Current Assignment
+                        </th>
+                        <th className="py-3 px-6 text-center">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-gray-700 divide-y divide-gray-200">
+                      {filteredEmployees.map((employee) => (
+                        <tr
+                          key={employee.id}
+                          className="hover:bg-gray-50 transition duration-150"
+                        >
+                          <td className="py-3 px-6">
+                            {employee.employee_name}
+                          </td>
+                          <td className="py-3 px-6">
+                            {employee.department_assigned} Section
+                          </td>
+                          <td className="py-3 px-6 text-center">
+                            <button
+                              onClick={() => openModal(employee)}
+                              className={`btn btn-sm text-white ${
+                                employee.assign
+                                  ? "bg-red-500 hover:bg-red-600"
+                                  : "bg-blue-500 hover:bg-blue-600"
+                              }`}
+                            >
+                              {employee.assign ? "Re-Assign" : "Assign"}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>
@@ -255,8 +268,11 @@ const Dashboard = () => {
               </label>
             </div>
             <div className="flex flex-col md:flex-row gap-3">
-              <select className="select select-bordered w-full md:w-1/2"
-              value={selectedSection} onChange={(e) => setSelectedSection(e.target.value)}>
+              <select
+                className="select select-bordered w-full md:w-1/2"
+                value={selectedSection}
+                onChange={(e) => setSelectedSection(e.target.value)}
+              >
                 <option disabled selected>
                   Dept./Section:
                 </option>
@@ -266,7 +282,7 @@ const Dashboard = () => {
                 <option value="Vegetable">Vegetable</option>
                 <option value="Groceries">Groceries</option>
                 <option value="Non Foods">Non Food</option>
-                      </select>
+              </select>
               <button
                 className="btn btn-primary text-white w-full md:w-1/2"
                 onClick={updateAssignment}
