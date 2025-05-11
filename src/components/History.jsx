@@ -1,20 +1,22 @@
 import Sidebar from "./Sidebar.jsx";
 import { useState, useEffect } from "react";
 import supabase from "./supabaseClient.jsx";
-import * as XLSX from 'xlsx';
+import { RiFileExcel2Fill } from "react-icons/ri";
+
+import * as XLSX from "xlsx";
 
 const PaymentHistory = () => {
   const [isPaid, notPaid] = useState(true);
   const [payments, setPayments] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
   const fetchPayment = async () => {
     const { data } = await supabase
-    .from('Rent')
-    .select('*')
-    .neq('status', 'Pending')
+      .from("Rent")
+      .select("*")
+      .neq("status", "Pending");
     setPayments(data);
   };
 
@@ -36,13 +38,13 @@ const PaymentHistory = () => {
 
   const handleStatusUpdate = async () => {
     if (!selectedPayment) return;
-    
+
     setIsUpdating(true);
     try {
       const { error } = await supabase
-        .from('Rent')
-        .update({ status: 'Paid' })
-        .eq('id', selectedPayment.id);
+        .from("Rent")
+        .update({ status: "Paid" })
+        .eq("id", selectedPayment.id);
 
       if (error) {
         console.error("Error updating status:", error);
@@ -60,28 +62,28 @@ const PaymentHistory = () => {
   };
 
   const formatDate = (date) => {
-    const formattedDate = new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    const formattedDate = new Date(date).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
     return formattedDate;
   };
 
-  const filteredPayments = payments.filter(payments =>
+  const filteredPayments = payments.filter((payments) =>
     payments.store_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const exportToExcel = () => {
     // Prepare the data for export
-    const exportData = payments.map(payment => ({
-      'Business Number': payment.business_number,
-      'Store Name': payment.store_name,
-      'Section': payment.department,
-      'Payment Amount': payment.amount,
-      'For Month of': payment.date,
-      'Date Paid': formatDate(payment.date_paid),
-      'Payment Collector': payment.employee_name
+    const exportData = payments.map((payment) => ({
+      "Business Number": payment.business_number,
+      "Store Name": payment.store_name,
+      Section: payment.department,
+      "Payment Amount": payment.amount,
+      "For Month of": payment.date,
+      "Date Paid": formatDate(payment.date_paid),
+      "Payment Collector": payment.employee_name,
     }));
 
     // Create a new workbook
@@ -90,37 +92,39 @@ const PaymentHistory = () => {
 
     // Set column widths
     const wscols = [
-      {wch: 15}, // Business Number
-      {wch: 25}, // Store Name
-      {wch: 20}, // Section
-      {wch: 15}, // Payment Amount
-      {wch: 15}, // For Month of
-      {wch: 15}, // Date Paid
-      {wch: 25}  // Payment Collector
+      { wch: 15 }, // Business Number
+      { wch: 25 }, // Store Name
+      { wch: 20 }, // Section
+      { wch: 15 }, // Payment Amount
+      { wch: 15 }, // For Month of
+      { wch: 15 }, // Date Paid
+      { wch: 25 }, // Payment Collector
     ];
-    ws['!cols'] = wscols;
+    ws["!cols"] = wscols;
 
     // Add the worksheet to the workbook
     XLSX.utils.book_append_sheet(wb, ws, "Payment History");
 
     // Generate the Excel file
-    const fileName = `Payment_History_${new Date().toISOString().split('T')[0]}.xlsx`;
+    const fileName = `Payment_History_${
+      new Date().toISOString().split("T")[0]
+    }.xlsx`;
     XLSX.writeFile(wb, fileName);
   };
 
   useEffect(() => {
     fetchPayment();
-   }, []);
- 
+  }, []);
+
   return (
     <>
       <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100 font-mono">
         {/* Sidebar: only visible on larger screens */}
         <Sidebar className="hidden lg:block" />
 
-        <main className="flex-1 p-4 md:p-6 lg:p-8 ml-0 lg:ml-64 transition-all duration-300">
-          <div className="mt-6">
-            <div className="card bg-base-100 border shadow-md mt-4">
+        <main className="flex-1 p-5 lg:p-5 ml-0 lg:ml-64 transition-all duration-300 text-gray-800">
+          <div>
+            <div className="card bg-base-100 border shadow-md">
               <div className="card-body">
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
                   <div>
@@ -154,55 +158,67 @@ const PaymentHistory = () => {
                       </svg>
                     </label>
                     <button
-                      className="btn btn-success btn-sm text-white"
+                      className="btn btn-success text-white"
                       onClick={exportToExcel}
                     >
+                      <RiFileExcel2Fill />
                       Export to Excel
                     </button>
                   </div>
                 </div>
 
                 {/* Table: scrollable on smaller screens */}
-                <div className="overflow-x-auto">
-                  <table className="table w-full">
-                    <thead>
+                <div className="overflow-x-auto rounded-lg">
+                  <table className="table w-full text-sm text-gray-700">
+                    <thead className="bg-gray-100 text-gray-600">
                       <tr>
-                        <th>Business Number</th>
-                        <th>Store Name</th>
-                        <th>Section</th>
-                        <th>Payment Amount</th>
-                        <th>For Month of</th>
-                        <th>Date Paid</th>
-                        <th>Payment Collector</th>
-                        <th>Status</th>
-                        <th>Payment Method</th>
-                        <th>Action</th>
+                        <th className="px-4 py-3 text-left">Business Number</th>
+                        <th className="px-4 py-3 text-left">Store Name</th>
+                        <th className="px-4 py-3 text-left">Section</th>
+                        <th className="px-4 py-3 text-left">Payment Amount</th>
+                        <th className="px-4 py-3 text-left">For Month of</th>
+                        <th className="px-4 py-3 text-left">Date Paid</th>
+                        <th className="px-4 py-3 text-left">
+                          Payment Collector
+                        </th>
+                        <th className="px-4 py-3 text-left">Status</th>
+                        <th className="px-4 py-3 text-left">Payment Method</th>
+                        <th className="px-4 py-3 text-left">Action</th>
                       </tr>
                     </thead>
                     <tbody>
-                    {filteredPayments.map((payment) => (
-                    <tr key={payment.id}>
-                      <td>{payment.business_number}</td>
-                      <td>{payment.store_name}</td>
-                      <td>{payment.department}</td>
-                      <td>{payment.total}</td>
-                      <td>{payment.date}</td>
-                      <td>{formatDate(payment.date_paid)}</td>
-                      <td>{payment.employee_name}</td>
-                      <td>{payment.status}</td>
-                      <td>{payment.payment_method}</td>
-                      <td>
-                        {payment.status === 'On-Process' && (
-                          <button
-                            className="btn btn-primary btn-sm text-white"
-                            onClick={() => openModal(payment)}
-                          >
-                            View
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                      {filteredPayments.map((payment) => (
+                        <tr
+                          key={payment.id}
+                          className="hover:bg-gray-50 border-t transition-colors duration-200"
+                        >
+                          <td className="px-4 py-3">
+                            {payment.business_number}
+                          </td>
+                          <td className="px-4 py-3">{payment.store_name}</td>
+                          <td className="px-4 py-3">{payment.department}</td>
+                          <td className="px-4 py-3">{payment.total}</td>
+                          <td className="px-4 py-3">{payment.date}</td>
+                          <td className="px-4 py-3">
+                            {formatDate(payment.date_paid)}
+                          </td>
+                          <td className="px-4 py-3">{payment.employee_name}</td>
+                          <td className="px-4 py-3">{payment.status}</td>
+                          <td className="px-4 py-3">
+                            {payment.payment_method}
+                          </td>
+                          <td className="px-4 py-3">
+                            {payment.status === "On-Process" && (
+                              <button
+                                className="btn btn-primary btn-sm text-white"
+                                onClick={() => openModal(payment)}
+                              >
+                                View
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -252,26 +268,26 @@ const PaymentHistory = () => {
                   <p>{selectedPayment.payment_method}</p>
                 </div>
               </div>
-              
+
               {selectedPayment.proof && (
                 <div className="mb-4">
                   <p className="font-semibold mb-2">Payment Proof:</p>
-                  <img 
-                    src={selectedPayment.proof} 
-                    alt="Payment Proof" 
+                  <img
+                    src={selectedPayment.proof}
+                    alt="Payment Proof"
                     className="max-w-full h-auto rounded-lg"
                   />
                 </div>
               )}
 
-              {selectedPayment.status === 'On-Process' && (
+              {selectedPayment.status === "On-Process" && (
                 <div className="flex justify-end gap-2">
-                  <button 
+                  <button
                     className="btn btn-primary text-white"
                     onClick={handleStatusUpdate}
                     disabled={isUpdating}
                   >
-                    {isUpdating ? 'Updating...' : 'Mark as Paid'}
+                    {isUpdating ? "Updating..." : "Mark as Paid"}
                   </button>
                 </div>
               )}

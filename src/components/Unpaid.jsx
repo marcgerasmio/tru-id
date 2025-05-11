@@ -5,17 +5,15 @@ import supabase from "./supabaseClient.jsx";
 const Unpaid = () => {
   const [isPaid, notPaid] = useState(true);
   const [payments, setPayments] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchPayment = async () => {
     const { data } = await supabase
-    .from('Rent')
-    .select('*')
-    .eq('status', 'Pending')
+      .from("Rent")
+      .select("*")
+      .eq("status", "Pending");
     setPayments(data);
   };
-
 
   const openModal = () => {
     const modal = document.getElementById("my_modal_3");
@@ -31,26 +29,21 @@ const Unpaid = () => {
     }
   };
 
-  const filteredPayments = payments.filter(payments =>
+  const filteredPayments = payments.filter((payments) =>
     payments.store_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-
-
-
   useEffect(() => {
     fetchPayment();
-   }, []);
- 
+  }, []);
+
   return (
     <>
       <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100 font-mono">
-        {/* Sidebar: only visible on larger screens */}
         <Sidebar className="hidden lg:block" />
-
-        <main className="flex-1 p-4 md:p-6 lg:p-8 ml-0 lg:ml-64 transition-all duration-300">
-          <div className="mt-6">
-            <div className="card bg-base-100 border shadow-md mt-4">
+        <main className="flex-1 p-5 lg:p-5 ml-0 lg:ml-64 transition-all duration-300 text-gray-800">
+          <div>
+            <div className="card bg-white border shadow-md">
               <div className="card-body">
                 <div className="flex flex-col md:flex-row md:justify-between gap-4 mb-4">
                   <div>
@@ -87,33 +80,38 @@ const Unpaid = () => {
                 </div>
 
                 {/* Table: scrollable on smaller screens */}
-                <div className="overflow-x-auto">
-                  <table className="table w-full">
-                    <thead>
+                <div className="overflow-x-auto rounded-lg">
+                  <table className="table w-full text-sm text-gray-700">
+                    <thead className="bg-gray-100 text-gray-600">
                       <tr>
-                        <th>Business Number</th>
-                        <th>Store Name</th>
-                        <th>Section</th>  
-                        <th>Water Bill</th>
-                        <th>Electric Bill</th>
-                        <th>Stall Rent</th>
-                        <th>Total Bill</th>
-                        <th>For Month of</th>
+                        <th className="px-4 py-3 text-left">Business Number</th>
+                        <th className="px-4 py-3 text-left">Store Name</th>
+                        <th className="px-4 py-3 text-left">Section</th>
+                        <th className="px-4 py-3 text-left">Water Bill</th>
+                        <th className="px-4 py-3 text-left">Electric Bill</th>
+                        <th className="px-4 py-3 text-left">Stall Rent</th>
+                        <th className="px-4 py-3 text-left">Total Bill</th>
+                        <th className="px-4 py-3 text-left">For Month of</th>
                       </tr>
                     </thead>
                     <tbody>
-                    {filteredPayments.map((payment) => (
-                    <tr key={payment.id}>
-                      <td>{payment.business_number}</td>
-                      <td>{payment.store_name}</td>
-                      <td>{payment.department}</td> 
-                      <td>{payment.water_bill}</td>
-                      <td>{payment.electric_bill}</td>
-                      <td>{payment.rent}</td>
-                      <td>{payment.total}</td>
-                      <td>{payment.date}</td>
-                    </tr>
-                  ))}
+                      {filteredPayments.map((payment) => (
+                        <tr
+                          key={payment.id}
+                          className="hover:bg-gray-50 border-t"
+                        >
+                          <td className="px-4 py-3">
+                            {payment.business_number}
+                          </td>
+                          <td className="px-4 py-3">{payment.store_name}</td>
+                          <td className="px-4 py-3">{payment.department}</td>
+                          <td className="px-4 py-3">{payment.water_bill}</td>
+                          <td className="px-4 py-3">{payment.electric_bill}</td>
+                          <td className="px-4 py-3">{payment.rent}</td>
+                          <td className="px-4 py-3">{payment.total}</td>
+                          <td className="px-4 py-3">{payment.date}</td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>

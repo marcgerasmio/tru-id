@@ -1,29 +1,28 @@
 import Sidebar from "./Sidebar.jsx";
 import { useState, useEffect } from "react";
 import supabase from "./supabaseClient.jsx";
+import { HiUserGroup, HiOfficeBuilding } from "react-icons/hi";
 
 const AccountManagement = () => {
   const [employees, setEmployees] = useState([]);
   const [tenants, setTenants] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
-  const [activeTab, setActiveTab] = useState('employees'); // New state for active tab
+  const [activeTab, setActiveTab] = useState("employees");
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedItemType, setSelectedItemType] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
 
   const fetchEmployee = async () => {
     try {
-      const { data, error } = await supabase
-        .from('Employee')
-        .select('*');
-      
+      const { data, error } = await supabase.from("Employee").select("*");
+
       if (error) {
         console.error("Error fetching employees:", error);
         return;
       }
-      
+
       setEmployees(data || []);
     } catch (err) {
       console.error("Exception when fetching employees:", err);
@@ -32,15 +31,13 @@ const AccountManagement = () => {
 
   const fetchTenants = async () => {
     try {
-      const { data, error } = await supabase
-        .from('Tenant')
-        .select('*');
-      
+      const { data, error } = await supabase.from("Tenant").select("*");
+
       if (error) {
         console.error("Error fetching tenants:", error);
         return;
       }
-      
+
       setTenants(data || []);
     } catch (err) {
       console.error("Exception when fetching tenants:", err);
@@ -70,20 +67,20 @@ const AccountManagement = () => {
 
     setIsDeleting(true);
     try {
-      const tableName = selectedItemType === 'employee' ? 'Employee' : 'Tenant';
+      const tableName = selectedItemType === "employee" ? "Employee" : "Tenant";
       const { error } = await supabase
         .from(tableName)
         .delete()
-        .eq('id', selectedItem.id);
+        .eq("id", selectedItem.id);
 
       if (error) {
         console.error(`Error deleting ${selectedItemType}:`, error);
         alert(`Failed to delete ${selectedItemType}. Please try again.`);
       } else {
-        if (selectedItemType === 'employee') {
-          setEmployees(employees.filter(emp => emp.id !== selectedItem.id));
+        if (selectedItemType === "employee") {
+          setEmployees(employees.filter((emp) => emp.id !== selectedItem.id));
         } else {
-          setTenants(tenants.filter(tenant => tenant.id !== selectedItem.id));
+          setTenants(tenants.filter((tenant) => tenant.id !== selectedItem.id));
         }
         closeModal();
       }
@@ -98,24 +95,28 @@ const AccountManagement = () => {
   const handleStatusUpdate = async (item, newStatus) => {
     setIsUpdating(true);
     try {
-      const tableName = activeTab === 'employees' ? 'Employee' : 'Tenant';
+      const tableName = activeTab === "employees" ? "Employee" : "Tenant";
       const { error } = await supabase
         .from(tableName)
         .update({ status: newStatus })
-        .eq('id', item.id);
+        .eq("id", item.id);
 
       if (error) {
         console.error(`Error updating ${activeTab} status:`, error);
         alert(`Failed to update status. Please try again.`);
       } else {
-        if (activeTab === 'employees') {
-          setEmployees(employees.map(emp => 
-            emp.id === item.id ? { ...emp, status: newStatus } : emp
-          ));
+        if (activeTab === "employees") {
+          setEmployees(
+            employees.map((emp) =>
+              emp.id === item.id ? { ...emp, status: newStatus } : emp
+            )
+          );
         } else {
-          setTenants(tenants.map(tenant => 
-            tenant.id === item.id ? { ...tenant, status: newStatus } : tenant
-          ));
+          setTenants(
+            tenants.map((tenant) =>
+              tenant.id === item.id ? { ...tenant, status: newStatus } : tenant
+            )
+          );
         }
       }
     } catch (err) {
@@ -131,11 +132,11 @@ const AccountManagement = () => {
     fetchTenants();
   }, []);
 
-  const filteredEmployees = employees.filter(employee =>
+  const filteredEmployees = employees.filter((employee) =>
     employee.employee_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredTenants = tenants.filter(tenant =>
+  const filteredTenants = tenants.filter((tenant) =>
     tenant.tenant_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -143,9 +144,9 @@ const AccountManagement = () => {
     <>
       <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100 font-mono">
         <Sidebar className="hidden lg:block" />
-        <main className="flex-1 p-4 md:p-6 lg:p-8 ml-0 lg:ml-64 transition-all duration-300">
-          <div className="mt-6">
-            <div className="card bg-base-100 border shadow-md mt-4">
+        <main className="flex-1 p-5 lg:p-5 ml-0 lg:ml-64 transition-all duration-300 text-gray-800">
+          <div>
+            <div className="card bg-base-100 border shadow-md">
               <div className="card-body">
                 <div className="flex flex-col md:flex-row md:justify-between gap-4 mb-4">
                   <div>
@@ -180,33 +181,35 @@ const AccountManagement = () => {
                   </label>
                 </div>
 
-                <div className="tabs">
-  <button
-    className={`tab px-4 py-2 rounded-lg ${
-      activeTab === 'employees'
-        ? 'bg-blue-500 text-white'
-        : 'bg-gray-200 text-gray-700'
-    }`}
-    onClick={() => setActiveTab('employees')}
-  >
-    Employees
-  </button>
-  <button
-    className={`tab px-4 py-2 rounded-lg ${
-      activeTab === 'tenants'
-        ? 'bg-blue-500 text-white'
-        : 'bg-gray-200 text-gray-700'
-    }`}
-    onClick={() => setActiveTab('tenants')}
-  >
-    Tenants
-  </button>
-</div>
+                <div className="flex space-x-6 border-b border-gray-300">
+                  <button
+                    className={`relative flex items-center gap-2 pb-2 transition-colors duration-300 ${
+                      activeTab === "employees"
+                        ? "text-blue-600 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-blue-600"
+                        : "text-gray-500 hover:text-blue-600"
+                    }`}
+                    onClick={() => setActiveTab("employees")}
+                  >
+                    <HiUserGroup className="w-5 h-5" />
+                    Employees
+                  </button>
+                  <button
+                    className={`relative flex items-center gap-2 pb-2 transition-colors duration-300 ${
+                      activeTab === "tenants"
+                        ? "text-blue-600 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-blue-600"
+                        : "text-gray-500 hover:text-blue-600"
+                    }`}
+                    onClick={() => setActiveTab("tenants")}
+                  >
+                    <HiOfficeBuilding className="w-5 h-5" />
+                    Tenants
+                  </button>
+                </div>
 
-                <div className="overflow-x-auto mt-4 max-h-[calc(100vh-300px)]">
-                  {activeTab === 'employees' && (
-                    <table className="table w-full">
-                      <thead className="sticky top-0 bg-base-100 z-10">
+                <div className="overflow-x-auto mt-4">
+                  {activeTab === "employees" && (
+                    <table className="table w-full text-sm text-gray-700">
+                      <thead className="bg-gray-100 text-gray-600">
                         <tr>
                           <th>Employee ID</th>
                           <th>Employee Name</th>
@@ -225,7 +228,9 @@ const AccountManagement = () => {
                               <select
                                 className="select select-bordered select-sm w-full max-w-xs"
                                 value={employee.status}
-                                onChange={(e) => handleStatusUpdate(employee, e.target.value)}
+                                onChange={(e) =>
+                                  handleStatusUpdate(employee, e.target.value)
+                                }
                                 disabled={isUpdating}
                               >
                                 <option value="Pending">Pending</option>
@@ -236,7 +241,7 @@ const AccountManagement = () => {
                             <td>
                               <button
                                 className="btn btn-error btn-sm text-white"
-                                onClick={() => openModal(employee, 'employee')}
+                                onClick={() => openModal(employee, "employee")}
                               >
                                 Delete
                               </button>
@@ -247,9 +252,9 @@ const AccountManagement = () => {
                     </table>
                   )}
 
-                  {activeTab === 'tenants' && (
-                    <table className="table w-full">
-                      <thead className="sticky top-0 bg-base-100 z-10">
+                  {activeTab === "tenants" && (
+                    <table className="table w-full text-sm text-gray-700">
+                      <thead className="bg-gray-100 text-gray-600">
                         <tr>
                           <th>Tenant ID</th>
                           <th>Tenant Name</th>
@@ -268,7 +273,9 @@ const AccountManagement = () => {
                               <select
                                 className="select select-bordered select-sm w-full max-w-xs"
                                 value={tenant.status}
-                                onChange={(e) => handleStatusUpdate(tenant, e.target.value)}
+                                onChange={(e) =>
+                                  handleStatusUpdate(tenant, e.target.value)
+                                }
                                 disabled={isUpdating}
                               >
                                 <option value="Pending">Pending</option>
@@ -279,7 +286,7 @@ const AccountManagement = () => {
                             <td>
                               <button
                                 className="btn btn-error btn-sm text-white"
-                                onClick={() => openModal(tenant, 'tenant')}
+                                onClick={() => openModal(tenant, "tenant")}
                               >
                                 Delete
                               </button>
@@ -296,7 +303,7 @@ const AccountManagement = () => {
         </main>
       </div>
 
-      <dialog id="my_modal_3" className="modal">
+      <dialog id="my_modal_3" className="modal font-mono">
         <div className="modal-box max-w-xs sm:max-w-md lg:max-w-lg">
           <form method="dialog">
             <button
@@ -307,22 +314,14 @@ const AccountManagement = () => {
             </button>
           </form>
           <h3 className="font-bold text-lg">Confirm Action</h3>
-          <p className="py-4">
-            Are you sure you want to delete?
-          </p>
+          <p className="py-4">Are you sure you want to delete?</p>
           <div className="flex justify-end gap-2">
-            <button 
-              className="btn btn-outline" 
-              onClick={closeModal}
-            >
-              Cancel
-            </button>
-            <button 
-              className="btn btn-error text-white" 
+            <button
+              className="btn btn-error text-white"
               onClick={handleDelete}
               disabled={isDeleting}
             >
-              {isDeleting ? 'Deleting...' : 'Delete'}
+              {isDeleting ? "Deleting..." : "Delete"}
             </button>
           </div>
         </div>

@@ -5,12 +5,12 @@ import supabase from "./supabaseClient.jsx";
 const Sanction = () => {
   const [sanctions, setSanctions] = useState([]);
   const [tenant, setTenants] = useState([]);
-  const [selectedTenant, setSelectedTenant] = useState(""); 
-  const [businessNumber, setBusinessNumber] = useState(""); 
+  const [selectedTenant, setSelectedTenant] = useState("");
+  const [businessNumber, setBusinessNumber] = useState("");
   const [complain, setComplain] = useState("");
   const [sanction, setSanction] = useState("");
   const [clearance, setClearance] = useState("");
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchSanctions = async () => {
     const { data } = await supabase
@@ -48,20 +48,18 @@ const Sanction = () => {
     }
   };
 
-  const add_sanction = async () => {
+  const addSanction = async () => {
     try {
-      const { data, error } = await supabase
-        .from('Sanction')
-        .insert([
-          {
-          store_name : selectedTenant,
+      const { data, error } = await supabase.from("Sanction").insert([
+        {
+          store_name: selectedTenant,
           business_number: businessNumber,
           complain,
           sanction,
           clearance,
-          status : 'Unresolved'
-          },
-        ]);
+          status: "Unresolved",
+        },
+      ]);
       closeModal();
       fetchSanctions();
     } catch (err) {
@@ -69,10 +67,9 @@ const Sanction = () => {
     }
   };
 
-  const filteredSanction = sanctions.filter(sanctions =>
-    sanctions.store_name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredSanction = sanctions.filter((sanction) =>
+    sanction.store_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
 
   useEffect(() => {
     fetchSanctions();
@@ -84,27 +81,25 @@ const Sanction = () => {
       <div className="flex flex-col lg:flex-row min-h-screen bg-gray-100 font-mono">
         {/* Sidebar */}
         <Sidebar className="hidden lg:block" />
+        <main className="flex-1 p-5 lg:p-5 ml-0 lg:ml-64 transition-all duration-300 text-gray-800">
+          <div className="card bg-white border shadow-md rounded-lg">
+            <div className="card-body">
+              <div className="flex flex-col md:flex-row md:justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="text-2xl font-semibold text-gray-800">
+                    Sanctions for Tenants
+                  </h2>
+                  <p className="text-gray-500 text-sm">
+                    View and manage penalties for tenants.
+                  </p>
+                </div>
 
-        <main className="flex-1 p-4 md:p-6 lg:p-8 ml-0 lg:ml-64 transition-all duration-300">
-          <div className="mt-6">
-            <div className="card bg-base-100 border shadow-md mt-4">
-              <div className="card-body">
-                <div className="flex flex-col md:flex-row md:justify-between gap-4 mb-4">
-                  <div>
-                    <h2 className="card-title text-xl md:text-2xl">
-                      List of Sanctions for All Tenants
-                    </h2>
-                    <p className="text-gray-500 text-sm md:text-base">
-                      Penalties and Complaints from these List of Tenants.
-                    </p>
-                  </div>
-
-                  {/* Search Input */}
-                  <label className="input input-bordered flex items-center gap-2 w-full md:w-1/2 lg:w-1/3">
+                <div className="flex items-center gap-4">
+                  <label className="input input-bordered flex items-center gap-2 w-full">
                     <input
                       type="text"
                       placeholder="Search Store Name..."
-                      className="w-full grow"
+                      className="w-full"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -123,46 +118,51 @@ const Sanction = () => {
                   </label>
                   <button
                     onClick={openModal}
-                    className="px-4 py-2 bg-blue-500 text-white font-bold rounded hover:bg-blue-600"
+                    className="btn btn-info text-white font-bold rounded-lg shadow-md transition duration-200"
                   >
-                    Add Sanction
+                    <span className="text-lg mb-1">+</span>Add Sanction
                   </button>
                 </div>
+              </div>
 
-                {/* Table */}
-                <div className="overflow-x-auto">
-                  <table className="table w-full">
-                    <thead>
-                      <tr>
-                        <th>Business Number</th>
-                        <th>Store Name</th>
-                        <th>Complain</th>
-                        <th>Sanction</th>
-                        <th>Clearance</th>
+              {/* Sanction Table */}
+              <div className="overflow-x-auto rounded-lg">
+                <table className="table w-full text-sm text-gray-700">
+                  <thead className="bg-gray-100 text-gray-700">
+                    <tr>
+                      <th className="px-4 py-3">Business Number</th>
+                      <th className="px-4 py-3">Store Name</th>
+                      <th className="px-4 py-3">Complain</th>
+                      <th className="px-4 py-3">Sanction</th>
+                      <th className="px-4 py-3">Clearance</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredSanction.map((sanction) => (
+                      <tr
+                        key={sanction.id}
+                        className="hover:bg-gray-50 border-t transition-colors duration-200"
+                      >
+                        <td className="px-4 py-3">
+                          {sanction.business_number}
+                        </td>
+                        <td className="px-4 py-3">{sanction.store_name}</td>
+                        <td className="px-4 py-3">{sanction.complain}</td>
+                        <td className="px-4 py-3">{sanction.sanction}</td>
+                        <td className="px-4 py-3">{sanction.clearance}</td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {filteredSanction.map((sanction) => (
-                        <tr key={sanction.id}>
-                          <td>{sanction.business_number}</td>
-                          <td>{sanction.store_name}</td>
-                          <td>{sanction.complain}</td>
-                          <td>{sanction.sanction}</td>
-                          <td>{sanction.clearance}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>
         </main>
       </div>
 
-      {/* Modal */}
-      <dialog id="my_modal_3" className="modal font-mono">
-        <div className="modal-box max-w-xs sm:max-w-md lg:max-w-lg">
+      {/* Add Sanction Modal */}
+      <dialog id="my_modal_3" className="modal font-sans">
+        <div className="modal-box max-w-lg">
           <form method="dialog">
             <button
               className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
@@ -171,55 +171,69 @@ const Sanction = () => {
               ✕
             </button>
           </form>
-          <h3 className="font-bold text-lg">Add Sanction</h3>
-          <div className="py-4">
-            <label htmlFor="tenant-dropdown" className="block font-medium">
-              Store Name:
-            </label>
-            <select
-              id="tenant-dropdown"
-              className="select select-bordered w-full"
-              value={selectedTenant}
-              onChange={handleTenantChange}
-            >
-              <option value="">-- Select Store Name --</option>
-              {tenant.map((t) => (
-                <option key={t.business_number} value={t.store_name}>
-                  {t.store_name}
-                </option>
-              ))}
-            </select>
-            <label htmlFor="amount-input" className="block font-medium mt-4">
-              Complain:
-            </label>
-            <input
-              type="text"
-              id="amount-input"
-              className="input input-bordered w-full"
-              onChange={(e) => setComplain(e.target.value)}
-            />
-             <label htmlFor="amount-input" className="block font-medium mt-4">
-              Sanction:
-            </label>
-            <input
-              type="text"
-              id="amount-input"
-              className="input input-bordered w-full"
-              onChange={(e) => setSanction(e.target.value)}
-            />
-             <label htmlFor="amount-input" className="block font-medium mt-4">
-              Clearance:
-            </label>
-            <input
-              type="text"
-              id="amount-input"
-              className="input input-bordered w-full"
-              onChange={(e) => setClearance(e.target.value)}
-            />
+          <h3 className="font-semibold text-lg mb-4">Add Sanction</h3>
+          <div className="py-4 space-y-4">
+            <div>
+              <label htmlFor="tenant-dropdown" className="block font-medium">
+                Store Name:
+              </label>
+              <select
+                id="tenant-dropdown"
+                className="select select-bordered w-full"
+                value={selectedTenant}
+                onChange={handleTenantChange}
+              >
+                <option value="">-- Select Store Name --</option>
+                {tenant.map((t) => (
+                  <option key={t.business_number} value={t.store_name}>
+                    {t.store_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="complain-input" className="block font-medium">
+                Complain:
+              </label>
+              <input
+                type="text"
+                id="complain-input"
+                className="input input-bordered w-full"
+                value={complain}
+                onChange={(e) => setComplain(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="sanction-input" className="block font-medium">
+                Sanction:
+              </label>
+              <input
+                type="text"
+                id="sanction-input"
+                className="input input-bordered w-full"
+                value={sanction}
+                onChange={(e) => setSanction(e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="clearance-input" className="block font-medium">
+                Clearance:
+              </label>
+              <input
+                type="text"
+                id="clearance-input"
+                className="input input-bordered w-full"
+                value={clearance}
+                onChange={(e) => setClearance(e.target.value)}
+              />
+            </div>
           </div>
-          <div className="flex justify-end content-end">
-            <button className="btn btn-primary text-white" onClick={add_sanction}>
-              Save
+          <div className="flex justify-end">
+            <button
+              className="btn btn-primary text-white"
+              onClick={addSanction}
+            >
+              Save Sanction
             </button>
           </div>
         </div>
