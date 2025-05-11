@@ -273,7 +273,7 @@ const Dashboard = () => {
                 value={selectedSection}
                 onChange={(e) => setSelectedSection(e.target.value)}
               >
-                <option disabled selected>
+                <option selected>
                   Dept./Section:
                 </option>
                 <option value="Meat">Meat</option>
