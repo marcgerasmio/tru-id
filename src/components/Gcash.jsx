@@ -130,22 +130,6 @@ const Gcash = () => {
                       Manage GCash accounts for payments.
                     </p>
                   </div>
-                  <div className="flex gap-2 items-center">
-                    <input
-                      type="text"
-                      placeholder="Search by name..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="input input-bordered w-60"
-                    />
-                    <button
-                      className="btn btn-success text-white"
-                      onClick={exportToExcel}
-                    >
-                      <RiFileExcel2Fill />
-                      Export to Excel
-                    </button>
-                  </div>
                 </div>
 
                 <div className="overflow-x-auto">
