@@ -10,6 +10,7 @@ import {
 } from "react-icons/fi";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { FaUserCog } from "react-icons/fa";
+import { FaMoneyBillWave } from "react-icons/fa";
 
 const Sidebar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -39,6 +40,11 @@ const Sidebar = () => {
       to: "/account-management",
       icon: <FaUserCog size={16} />,
       label: "Account Management",
+    },
+    {
+      to: "/gcash",
+      icon: <FaMoneyBillWave size={16} />,
+      label: "GCash Accounts",
     },
   ];
 
